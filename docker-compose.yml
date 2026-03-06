@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  preme-cal:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: preme-cal
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_PATH=/app/data/preme-cal.db
+      - NEXT_PUBLIC_APP_NAME=Preme Cal
+    volumes:
+      - preme-cal-data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/history"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  preme-cal-data:
+    driver: local
